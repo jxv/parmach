@@ -131,8 +131,12 @@ bool pm_char_fn(const union pm_data d,
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
 	}
-	if (src[state->pos] == d.prim.c) {
-		res->value = pm_prim_c(d.prim.c);
+	const char c = src[state->pos];
+	if (c == '\n') {
+		state->line++;
+	}
+	if (c == d.prim.c) {
+		res->value = pm_prim_c(c);
 		state->pos++;
 		return true;
 	}
@@ -189,6 +193,6 @@ void pm_try(struct pm_parser *p, struct pm_parser *q)
 
 bool pm_parse(struct pm_parser *p, const char *src, long len, union pm_result *res)
 {
-	struct pm_state state = { .pos = 0, .row = 0, .col = 0 };
+	struct pm_state state = { .pos = 0, .line = 0 };
 	return p->fn(p->self, src, len, &state, res);
 }

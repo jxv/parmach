@@ -8,8 +8,7 @@ struct pm_parser;
 
 struct pm_state {
 	long pos;
-	long row;
-	long col;
+	long line;
 };
 
 struct pm_error {
