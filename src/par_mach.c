@@ -91,34 +91,6 @@ struct pm_value pm_prim_f(float f)
 	};
 }
 
-#ifdef PM_PRIM_64
-struct pm_value pm_prim_i64(int64_t i64)
-{
-	return (struct pm_value) {
-		.group = PM_PRIM,
-		.tag = PM_INT64,
-		.data.prim.i64 = i64,
-	};
-}
-struct pm_value pm_prim_u64(uint64_t u64)
-{
-	return (struct pm_value) {
-		.group = PM_PRIM,
-		.tag = PM_UINT64,
-		.data.prim.u64 = u64,
-	};
-}
-
-struct pm_value pm_prim_d(double d)
-{
-	return (struct pm_value) {
-		.group = PM_PRIM,
-		.tag = PM_DOUBLE,
-		.data.prim.d = d,
-	};
-}
-#endif
-
 bool pm_out_of_range(const char *src, long len,
 	struct pm_state *state, union pm_result *res)
 {
