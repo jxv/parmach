@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <wchar.h>
 
 struct pm_parser;
 
@@ -20,31 +21,27 @@ struct pm_error {
 enum pm_prim_tag {
 	PM_BOOL,
 	PM_CHAR,
-	PM_UINT8,
-	PM_UINT16,
-	PM_UINT32,
-	PM_UINT64,
 	PM_INT8,
+	PM_UINT8,
+	PM_WCHAR,
 	PM_INT16,
+	PM_UINT16,
 	PM_INT32,
-	PM_INT64,
+	PM_UINT32,
 	PM_FLOAT,
-	PM_DOUBLE,
 };
 
 union pm_prim {
 	bool b;
 	char c;
-	uint8_t u8;
-	uint16_t u16;
-	uint32_t u32;
-	uint64_t u64;
 	int8_t i8;
+	uint8_t u8;
+	wchar_t wc;
 	int16_t i16;
+	uint16_t u16;
 	int32_t i32;
-	int64_t i64;
+	uint32_t u32;
 	float f;
-	double d;
 };
 
 union pm_data {

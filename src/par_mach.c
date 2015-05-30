@@ -19,6 +19,15 @@ struct pm_value pm_prim_c(char c)
 	};
 }
 
+struct pm_value pm_prim_i8(int8_t i8)
+{
+	return (struct pm_value) {
+		.group = PM_PRIM,
+		.tag = PM_INT8,
+		.data.prim.i8 = i8,
+	};
+}
+
 struct pm_value pm_prim_u8(uint8_t u8)
 {
 	return (struct pm_value) {
@@ -28,39 +37,12 @@ struct pm_value pm_prim_u8(uint8_t u8)
 	};
 }
 
-struct pm_value pm_prim_u16(uint16_t u16)
+struct pm_value pm_prim_wc(wchar_t wc)
 {
 	return (struct pm_value) {
 		.group = PM_PRIM,
-		.tag = PM_UINT16,
-		.data.prim.u16 = u16,
-	};
-}
-
-struct pm_value pm_prim_u32(uint32_t u32)
-{
-	return (struct pm_value) {
-		.group = PM_PRIM,
-		.tag = PM_UINT32,
-		.data.prim.u32 = u32,
-	};
-}
-
-struct pm_value pm_prim_u64(uint64_t u64)
-{
-	return (struct pm_value) {
-		.group = PM_PRIM,
-		.tag = PM_UINT64,
-		.data.prim.u64 = u64,
-	};
-}
-
-struct pm_value pm_prim_i8(int8_t i8)
-{
-	return (struct pm_value) {
-		.group = PM_PRIM,
-		.tag = PM_INT8,
-		.data.prim.i8 = i8,
+		.tag = PM_WCHAR,
+		.data.prim.wc = wc,
 	};
 }
 
@@ -73,6 +55,15 @@ struct pm_value pm_prim_i16(int16_t i16)
 	};
 }
 
+struct pm_value pm_prim_u16(uint16_t u16)
+{
+	return (struct pm_value) {
+		.group = PM_PRIM,
+		.tag = PM_UINT16,
+		.data.prim.u16 = u16,
+	};
+}
+
 struct pm_value pm_prim_i32(int32_t i32)
 {
 	return (struct pm_value) {
@@ -82,6 +73,25 @@ struct pm_value pm_prim_i32(int32_t i32)
 	};
 }
 
+struct pm_value pm_prim_u32(uint32_t u32)
+{
+	return (struct pm_value) {
+		.group = PM_PRIM,
+		.tag = PM_UINT32,
+		.data.prim.u32 = u32,
+	};
+}
+
+struct pm_value pm_prim_f(float f)
+{
+	return (struct pm_value) {
+		.group = PM_PRIM,
+		.tag = PM_FLOAT,
+		.data.prim.f = f,
+	};
+}
+
+#ifdef PM_PRIM_64
 struct pm_value pm_prim_i64(int64_t i64)
 {
 	return (struct pm_value) {
@@ -90,13 +100,12 @@ struct pm_value pm_prim_i64(int64_t i64)
 		.data.prim.i64 = i64,
 	};
 }
-
-struct pm_value pm_prim_f(float f)
+struct pm_value pm_prim_u64(uint64_t u64)
 {
 	return (struct pm_value) {
 		.group = PM_PRIM,
-		.tag = PM_INT64,
-		.data.prim.f = f,
+		.tag = PM_UINT64,
+		.data.prim.u64 = u64,
 	};
 }
 
@@ -108,6 +117,7 @@ struct pm_value pm_prim_d(double d)
 		.data.prim.d = d,
 	};
 }
+#endif
 
 bool pm_out_of_range(const char *src, long len,
 	struct pm_state *state, union pm_result *res)
