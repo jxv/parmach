@@ -138,17 +138,33 @@ bool pm_or_fn(const union pm_data d,
 	const char *src, long len,
 	struct pm_state *state, union pm_result *res)
 {
-	const struct pm_parser *p = d.ptr;
 	return
-		p[0].fn(p[0].self, src, len, state, res) ||
-		p[1].fn(p[1].self, src, len, state, res);
+		d.parser[0].fn(d.parser[0].self, src, len, state, res) ||
+		d.parser[1].fn(d.parser[1].self, src, len, state, res);
 }
 
-void pm_or(struct pm_parser *ps, struct pm_parser *q)
+void pm_or(struct pm_parser p[2], struct pm_parser *q)
 {
 	*q = (struct pm_parser) {
-		.self.parser = ps,
+		.self.parser = p,
 		.fn = pm_or_fn,
+	};
+}
+
+bool pm_and_fn(const union pm_data d,
+	const char *src, long len,
+	struct pm_state *state, union pm_result *res)
+{
+	return
+		d.parser[0].fn(d.parser[0].self, src, len, state, &res[0]) &&
+		d.parser[1].fn(d.parser[1].self, src, len, state, &res[1]);
+}
+
+void pm_and(struct pm_parser p[2], struct pm_parser *q)
+{
+	*q = (struct pm_parser) {
+		.self.parser = p,
+		.fn = pm_and_fn,
 	};
 }
 
@@ -178,3 +194,28 @@ bool pm_parse(struct pm_parser *p, const char *src, long len, union pm_result *r
 	struct pm_state state = { .pos = 0, .line = 0 };
 	return p->fn(p->self, src, len, &state, res);
 }
+
+bool pm_digit_fn(union pm_data d,
+	const char *src, long len,
+	struct pm_state *state, union pm_result *res)
+{
+	if (pm_out_of_range(src, len, state, res)) {
+		return false;
+	}
+	const char c = src[state->pos];
+	if (c == '\n') {
+		state->line++;
+	}
+	if (c >= '0' && c <= '9') {
+		res->value = pm_prim_c(c);
+		state->pos++;
+		return true;
+	}
+	state->pos++;
+	return false;
+}
+
+const struct pm_parser pm_digit = {
+	.self.parser = NULL,
+	.fn = pm_digit_fn,
+};

@@ -71,9 +71,12 @@ struct pm_parser {
 };
 
 void pm_char(char c, struct pm_parser *q);
-void pm_or(struct pm_parser *ps, struct pm_parser *q);
-void pm_try(struct pm_parser *p, struct pm_parser *q);
+void pm_or(struct pm_parser p[2], struct pm_parser *q);
+void pm_and(struct pm_parser p[2], struct pm_parser *q);
+void pm_try(struct pm_parser p[1], struct pm_parser *q);
 
-bool pm_parse(struct pm_parser *p, const char *src, long len, union pm_result *res);
+bool pm_parse(struct pm_parser p[1], const char *src, long len, union pm_result *res);
+
+extern const struct pm_parser pm_digit;
 
 #endif
