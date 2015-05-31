@@ -1,15 +1,15 @@
 all:
-	gcc src/par_mach.c -c -o src/par_mach.o -I./include -Wall -Werror -pedantic -std=c11 -g -O3 -lc
-	ar rvs libpar_mach.a src/*.o
+	gcc src/parmach.c -c -o src/parmach.o -I./include -Wall -Werror -pedantic -std=c11 -g -O3 -lc
+	ar rvs libparmach.a src/*.o
 clean:
-	rm libpar_mach.a src/*.o
+	rm libparmach.a src/*.o
 install:
 	cp include/*.h /usr/include
-	cp libpar_mach.a /usr/lib/
+	cp libparmach.a /usr/lib/
 
 gcw0:
-	mipsel-gcw0-linux-uclibc-cc src/par_mach.c -c -o src/par_mach.o -I./include -Wall -Werror -pedantic -std=c11 -g -O2 -lc -I./include
-	mipsel-gcw0-linux-uclibc-ar rvs libpar_mach.a src/*.o
+	mipsel-gcw0-linux-uclibc-cc src/parmach.c -c -o src/parmach.o -I./include -Wall -Werror -pedantic -std=c11 -g -O2 -lc -I./include
+	mipsel-gcw0-linux-uclibc-ar rvs libparmach.a src/*.o
 install_gcw0:
 	cp include/*.h /opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/include
-	cp libpar_mach.a /opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/lib
+	cp libparmach.a /opt/gcw0-toolchain/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/lib
