@@ -18,6 +18,11 @@ struct pm_error {
 	const char *msg;
 };
 
+struct pm_str {
+	const char *data;
+	long len;
+};
+
 enum pm_prim_tag {
 	PM_BOOL,
 	PM_CHAR,
@@ -42,11 +47,6 @@ union pm_prim {
 	int32_t i32;
 	uint32_t u32;
 	float f;
-};
-
-struct pm_str {
-	const char *data;
-	int len;
 };
 
 union pm_data {
@@ -76,14 +76,28 @@ struct pm_parser {
 	pm_parser_fn fn;
 };
 
-void pm_one_of(struct pm_str *strm, struct pm_parser *q);
+void pm_one_of(struct pm_str *str, struct pm_parser *q);
+void pm_none_of(struct pm_str *str, struct pm_parser *q);
 void pm_char(char c, struct pm_parser *q);
+void pm_satisfy(bool (*fn)(char), struct pm_parser *q);
+void pm_string(struct pm_str *str, struct pm_parser *q);
+
 void pm_or(struct pm_parser p[2], struct pm_parser *q);
 void pm_and(struct pm_parser p[2], struct pm_parser *q);
 void pm_try(struct pm_parser p[1], struct pm_parser *q);
 
 bool pm_parse(struct pm_parser p[1], const char *src, long len, union pm_result *res);
 
-extern const struct pm_parser pm_digit;
+extern struct pm_parser pm_space;
+extern struct pm_parser pm_newline;
+extern struct pm_parser pm_tab;
+extern struct pm_parser pm_upper;
+extern struct pm_parser pm_lower;
+extern struct pm_parser pm_alpha_num;
+extern struct pm_parser pm_letter;
+extern struct pm_parser pm_digit;
+extern struct pm_parser pm_hex_digit;
+extern struct pm_parser pm_oct_digit;
+extern struct pm_parser pm_any_char;
 
 #endif
