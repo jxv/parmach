@@ -106,6 +106,35 @@ bool pm_out_of_range(const char *src, long len,
 	
 }
 
+bool pm_one_of_fn(const union pm_data d,
+	const char *src, long len,
+	struct pm_state *state, union pm_result *res)
+{
+	if (pm_out_of_range(src, len, state, res)) {
+		return false;
+	}
+	const char c = src[state->pos];
+	state->pos++;
+	if (c == '\n') {
+		state->line++;
+	}
+	for (int i = 0; i < d.str->len; i++) {
+		if (c == d.str->data[i]) {
+			res->value = pm_prim_c(c);
+			return true;
+		}
+	}
+	return false;
+}
+
+void pm_one_of(struct pm_str *str, struct pm_parser *q)
+{
+	*q = (struct pm_parser) {
+		.self.str = str,
+		.fn = pm_one_of_fn,
+	};
+}
+
 bool pm_char_fn(const union pm_data d,
 	const char *src, long len,
 	struct pm_state *state, union pm_result *res)
@@ -114,15 +143,14 @@ bool pm_char_fn(const union pm_data d,
 		return false;
 	}
 	const char c = src[state->pos];
+	state->pos++;
 	if (c == '\n') {
 		state->line++;
 	}
 	if (c == d.prim.c) {
 		res->value = pm_prim_c(c);
-		state->pos++;
 		return true;
 	}
-	state->pos++;
 	return false;
 }
 
@@ -203,15 +231,14 @@ bool pm_digit_fn(union pm_data d,
 		return false;
 	}
 	const char c = src[state->pos];
+	state->pos++;
 	if (c == '\n') {
 		state->line++;
 	}
 	if (c >= '0' && c <= '9') {
 		res->value = pm_prim_c(c);
-		state->pos++;
 		return true;
 	}
-	state->pos++;
 	return false;
 }
 

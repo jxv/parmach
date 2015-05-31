@@ -44,9 +44,15 @@ union pm_prim {
 	float f;
 };
 
+struct pm_str {
+	const char *data;
+	int len;
+};
+
 union pm_data {
 	union pm_prim prim;
 	struct pm_parser *parser;
+	struct pm_str *str;
 	void *ptr;
 };
 
@@ -70,6 +76,7 @@ struct pm_parser {
 	pm_parser_fn fn;
 };
 
+void pm_one_of(struct pm_str *strm, struct pm_parser *q);
 void pm_char(char c, struct pm_parser *q);
 void pm_or(struct pm_parser p[2], struct pm_parser *q);
 void pm_and(struct pm_parser p[2], struct pm_parser *q);
