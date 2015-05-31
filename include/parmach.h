@@ -1,5 +1,5 @@
-#ifndef PAR_MACH_H
-#define PAR_MACH_H
+#ifndef PARMACH_H
+#define PARMACH_H
 
 #include <stdint.h>
 #include <stdbool.h>
