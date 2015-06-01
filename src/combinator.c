@@ -14,6 +14,7 @@ bool pm_choice_fn(const union pm_data d, const char *src, long len,
 			return true;
 		}
 	}
+	res->error.state = *state;
 	return false;
 }
 

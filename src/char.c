@@ -3,6 +3,21 @@
 #include "parmach.h"
 #include "internal.h"
 
+static bool is_number(char c)
+{
+	return c >= '0' && c <= '9';
+}
+
+static bool is_lower(char c)
+{
+	return c >= 'a' && c <= 'z';
+}
+
+static bool is_upper(char c)
+{
+	return c >= 'A' && c <= 'Z';
+}
+
 bool pm_one_of_fn(const union pm_data d, const char *src, long len,
 	struct pm_state *state, union pm_result *res)
 {
@@ -16,6 +31,7 @@ bool pm_one_of_fn(const union pm_data d, const char *src, long len,
 			return true;
 		}
 	}
+	res->error.state = *state;
 	return false;
 }
 
@@ -62,6 +78,7 @@ bool pm_char_fn(const union pm_data d, const char *src, long len,
 		res->value = pm_prim_c(c);
 		return true;
 	}
+	res->error.state = *state;
 	return false;
 }
 
@@ -85,6 +102,7 @@ bool pm_satisfy_fn(const union pm_data d, const char *src, long len,
 		res->value = pm_prim_c(c);
 		return true;
 	}
+	res->error.state = *state;
 	return false;
 }
 
@@ -105,6 +123,7 @@ bool pm_string_fn(const union pm_data d, const char *src, long len,
 	for (long i = 0; i < d.str->len; i++) {
 		const char c = pm_step_state(src, state);
 		if (c != d.str->data[i]) {
+			res->error.state = *state;
 			return false;
 		}
 	}
@@ -135,6 +154,7 @@ bool pm_space_fn(union pm_data d, const char *src, long len,
 		res->value = pm_prim_c(c);
 		return true;
 	}
+	res->error.state = *state;
 	return false;
 }
 
@@ -153,7 +173,7 @@ struct pm_parser pm_tab = {
 	.fn = pm_char_fn,
 };
 
-bool pm_upper_fn(union pm_data d, const char *src, long len,
+bool pm_upper_fn(const union pm_data d, const char *src, long len,
 	struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
@@ -164,6 +184,7 @@ bool pm_upper_fn(union pm_data d, const char *src, long len,
 		res->value = pm_prim_c(c);
 		return true;
 	}
+	res->error.state = *state;
 	return false;
 }
 
@@ -172,17 +193,18 @@ struct pm_parser pm_upper = {
 	.fn = pm_upper_fn,
 };
 
-bool pm_lower_fn(union pm_data d, const char *src, long len,
+bool pm_lower_fn(const union pm_data d, const char *src, long len,
 	struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
 	}
 	const char c = pm_step_state(src, state);
-	if (c >= 'a' && c <= 'z') {
+	if (is_lower(c)) {
 		res->value = pm_prim_c(c);
 		return true;
 	}
+	res->error.state = *state;
 	return false;
 }
 
@@ -191,17 +213,18 @@ struct pm_parser pm_lower = {
 	.fn = pm_lower_fn,
 };
 
-bool pm_alpha_num_fn(union pm_data d, const char *src, long len,
+bool pm_alpha_num_fn(const union pm_data d, const char *src, long len,
 	struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
 	}
 	const char c = pm_step_state(src, state);
-	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
+	if (is_lower(c) || is_upper(c) || is_number(c)) {
 		res->value = pm_prim_c(c);
 		return true;
 	}
+	res->error.state = *state;
 	return false;
 }
 
@@ -210,17 +233,18 @@ struct pm_parser pm_alpha_num = {
 	.fn = pm_alpha_num_fn,
 };
 
-bool pm_letter_fn(union pm_data d, const char *src, long len,
+bool pm_letter_fn(const union pm_data d, const char *src, long len,
 	struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
 	}
 	const char c = pm_step_state(src, state);
-	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+	if (is_lower(c) || is_upper(c)) {
 		res->value = pm_prim_c(c);
 		return true;
 	}
+	res->error.state = *state;
 	return false;
 }
 
@@ -229,17 +253,18 @@ struct pm_parser pm_letter_num = {
 	.fn = pm_letter_fn,
 };
 
-bool pm_digit_fn(union pm_data d, const char *src, long len,
+bool pm_digit_fn(const union pm_data d, const char *src, long len,
 	struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
 	}
 	const char c = pm_step_state(src, state);
-	if (c >= '0' && c <= '9') {
+	if (is_number(c)) {
 		res->value = pm_prim_c(c);
 		return true;
 	}
+	res->error.state = *state;
 	return false;
 }
 
@@ -248,17 +273,18 @@ struct pm_parser pm_digit = {
 	.fn = pm_digit_fn,
 };
 
-bool pm_hex_digit_fn(union pm_data d, const char *src, long len,
+bool pm_hex_digit_fn(const union pm_data d, const char *src, long len,
 	struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
 	}
 	const char c = pm_step_state(src, state);
-	if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
+	if (is_number(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
 		res->value = pm_prim_c(c);
 		return true;
 	}
+	res->error.state = *state;
 	return false;
 }
 
@@ -267,7 +293,7 @@ struct pm_parser pm_hex_digit_num = {
 	.fn = pm_hex_digit_fn,
 };
 
-bool pm_oct_digit_fn(union pm_data d, const char *src, long len,
+bool pm_oct_digit_fn(const union pm_data d, const char *src, long len,
 	struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
@@ -278,6 +304,7 @@ bool pm_oct_digit_fn(union pm_data d, const char *src, long len,
 		res->value = pm_prim_c(c);
 		return true;
 	}
+	res->error.state = *state;
 	return false;
 }
 
@@ -286,7 +313,7 @@ struct pm_parser pm_oct_digit = {
 	.fn = pm_oct_digit_fn,
 };
 
-bool pm_any_char_fn(union pm_data d, const char *src, long len,
+bool pm_any_char_fn(const union pm_data d, const char *src, long len,
 	struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {

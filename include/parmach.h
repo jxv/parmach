@@ -74,7 +74,9 @@ union pm_result {
 	struct pm_error error;
 };
 
-typedef bool (*pm_parser_fn)(union pm_data, const char *, long, struct pm_state *, union pm_result *);
+typedef bool (*pm_parser_fn)
+	(const union pm_data, const char *, long,
+	struct pm_state *, union pm_result *);
 
 struct pm_parser {
 	union pm_data self;
@@ -93,7 +95,8 @@ void pm_try(struct pm_parser p[1], struct pm_parser *q);
 
 void pm_choice(struct pm_parsers *p, struct pm_parser *q);
 
-bool pm_parse(struct pm_parser p[1], const char *src, long len, union pm_result *res);
+bool pm_parse(struct pm_parser p[1], const char *src, long len,
+	union pm_result *res);
 
 extern struct pm_parser pm_space;
 extern struct pm_parser pm_newline;
