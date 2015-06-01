@@ -18,8 +18,7 @@ static bool is_upper(char c)
 	return c >= 'A' && c <= 'Z';
 }
 
-bool pm_one_of_fn(const union pm_data d, const char *src, long len,
-	struct pm_state *state, union pm_result *res)
+bool pm_one_of_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
@@ -43,8 +42,7 @@ void pm_one_of(struct pm_str *str, struct pm_parser *q)
 	};
 }
 
-bool pm_none_of_fn(const union pm_data d, const char *src, long len,
-	struct pm_state *state, union pm_result *res)
+bool pm_none_of_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
@@ -67,8 +65,7 @@ void pm_none_of(struct pm_str *str, struct pm_parser *q)
 	};
 }
 
-bool pm_char_fn(const union pm_data d, const char *src, long len,
-	struct pm_state *state, union pm_result *res)
+bool pm_char_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
@@ -90,8 +87,7 @@ void pm_char(char c, struct pm_parser *q)
 	};
 }
 
-bool pm_satisfy_fn(const union pm_data d, const char *src, long len,
-	struct pm_state *state, union pm_result *res)
+bool pm_satisfy_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
@@ -114,8 +110,7 @@ void pm_satisfy(bool (*fn)(char), struct pm_parser *q)
 	};
 }
 
-bool pm_string_fn(const union pm_data d, const char *src, long len,
-	struct pm_state *state, union pm_result *res)
+bool pm_string_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len + d.str->len, state, res)) {
 		return false;
@@ -143,8 +138,7 @@ void pm_string(struct pm_str *str, struct pm_parser *q)
 	};
 }
 
-bool pm_space_fn(union pm_data d, const char *src, long len,
-	struct pm_state *state, union pm_result *res)
+bool pm_space_fn(union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
@@ -173,8 +167,7 @@ struct pm_parser pm_tab = {
 	.fn = pm_char_fn,
 };
 
-bool pm_upper_fn(const union pm_data d, const char *src, long len,
-	struct pm_state *state, union pm_result *res)
+bool pm_upper_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
@@ -193,8 +186,7 @@ struct pm_parser pm_upper = {
 	.fn = pm_upper_fn,
 };
 
-bool pm_lower_fn(const union pm_data d, const char *src, long len,
-	struct pm_state *state, union pm_result *res)
+bool pm_lower_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
@@ -213,8 +205,7 @@ struct pm_parser pm_lower = {
 	.fn = pm_lower_fn,
 };
 
-bool pm_alpha_num_fn(const union pm_data d, const char *src, long len,
-	struct pm_state *state, union pm_result *res)
+bool pm_alpha_num_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
@@ -233,8 +224,7 @@ struct pm_parser pm_alpha_num = {
 	.fn = pm_alpha_num_fn,
 };
 
-bool pm_letter_fn(const union pm_data d, const char *src, long len,
-	struct pm_state *state, union pm_result *res)
+bool pm_letter_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
@@ -253,8 +243,7 @@ struct pm_parser pm_letter_num = {
 	.fn = pm_letter_fn,
 };
 
-bool pm_digit_fn(const union pm_data d, const char *src, long len,
-	struct pm_state *state, union pm_result *res)
+bool pm_digit_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
@@ -273,8 +262,7 @@ struct pm_parser pm_digit = {
 	.fn = pm_digit_fn,
 };
 
-bool pm_hex_digit_fn(const union pm_data d, const char *src, long len,
-	struct pm_state *state, union pm_result *res)
+bool pm_hex_digit_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
@@ -293,8 +281,7 @@ struct pm_parser pm_hex_digit_num = {
 	.fn = pm_hex_digit_fn,
 };
 
-bool pm_oct_digit_fn(const union pm_data d, const char *src, long len,
-	struct pm_state *state, union pm_result *res)
+bool pm_oct_digit_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
@@ -313,8 +300,7 @@ struct pm_parser pm_oct_digit = {
 	.fn = pm_oct_digit_fn,
 };
 
-bool pm_any_char_fn(const union pm_data d, const char *src, long len,
-	struct pm_state *state, union pm_result *res)
+bool pm_any_char_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;

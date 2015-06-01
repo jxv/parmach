@@ -1,8 +1,7 @@
 #include "parmach.h"
 #include "internal.h"
 
-bool pm_choice_fn(const union pm_data d, const char *src, long len,
-	struct pm_state *state, union pm_result *res)
+bool pm_choice_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
