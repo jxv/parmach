@@ -23,6 +23,11 @@ struct pm_str {
 	long len;
 };
 
+struct pm_parsers {
+	struct pm_parser *data;
+	long len;
+};
+
 enum pm_prim_tag {
 	PM_BOOL,
 	PM_CHAR,
@@ -85,6 +90,8 @@ void pm_string(struct pm_str *str, struct pm_parser *q);
 void pm_or(struct pm_parser p[2], struct pm_parser *q);
 void pm_and(struct pm_parser p[2], struct pm_parser *q);
 void pm_try(struct pm_parser p[1], struct pm_parser *q);
+
+void pm_choice(struct pm_parsers *p, struct pm_parser *q);
 
 bool pm_parse(struct pm_parser p[1], const char *src, long len, union pm_result *res);
 
