@@ -81,6 +81,10 @@ struct pm_parser {
 	pm_parser_fn fn;
 };
 
+bool pm_out_of_range(const char *src, long len, struct pm_state *state, union pm_result *res);
+
+char pm_step_state(const char *src, struct pm_state *state);
+
 void pm_one_of(struct pm_str *str, struct pm_parser *q);
 void pm_none_of(struct pm_str *str, struct pm_parser *q);
 void pm_char(char c, struct pm_parser *q);
