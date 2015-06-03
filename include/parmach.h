@@ -94,6 +94,7 @@ void pm_and(struct pm_parser p[2], struct pm_parser *q);
 void pm_try(struct pm_parser p[1], struct pm_parser *q);
 
 void pm_choice(struct pm_parsers *p, struct pm_parser *q);
+void pm_choice_try(struct pm_parsers *p, struct pm_parser *q);
 
 bool pm_parse_step(struct pm_parser p[1], const char *src, long len, struct pm_state *state, struct pm_result *res);
 bool pm_parse(struct pm_parser p[1], const char *src, long len, struct pm_result *res);

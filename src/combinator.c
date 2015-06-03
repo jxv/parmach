@@ -23,6 +23,28 @@ void pm_choice(struct pm_parsers *p, struct pm_parser *q)
 	};
 }
 
+bool pm_choice_try_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
+{
+	struct pm_parsers *p = d.ptr;
+	struct pm_parser try;
+	for (long i = 0; i < p->len; i++) {
+		struct pm_parser *q = p->data + i;
+		pm_try(q, &try);
+		if (pm_parse_step(&try, src, len, state, res)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void pm_choice_try(struct pm_parsers *p, struct pm_parser *q)
+{
+	*q = (struct pm_parser) {
+		.self.ptr = p,
+		.fn = pm_choice_try_fn,
+	};
+}
+
 bool pm_trail_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
 {
 	struct pm_str *str = res->value.data.str;
