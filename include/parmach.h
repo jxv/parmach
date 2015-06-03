@@ -67,19 +67,19 @@ struct pm_value {
 	union pm_data data;
 };
 
-union pm_result {
+struct pm_result {
 	struct pm_value value;
 	struct pm_error error;
 };
 
-typedef bool (*pm_parser_fn) (const union pm_data, const char *, long, struct pm_state *, union pm_result *);
+typedef bool (*pm_parser_fn) (const union pm_data, const char *, long, struct pm_state *, struct pm_result *);
 
 struct pm_parser {
 	union pm_data self;
 	pm_parser_fn fn;
 };
 
-bool pm_out_of_range(const char *src, long len, struct pm_state *state, union pm_result *res);
+bool pm_out_of_range(const char *src, long len, struct pm_state *state, struct pm_result *res);
 
 char pm_step_state(const char *src, struct pm_state *state);
 
@@ -95,8 +95,8 @@ void pm_try(struct pm_parser p[1], struct pm_parser *q);
 
 void pm_choice(struct pm_parsers *p, struct pm_parser *q);
 
-bool pm_parse_step(struct pm_parser p[1], const char *src, long len, struct pm_state *state, union pm_result *res);
-bool pm_parse(struct pm_parser p[1], const char *src, long len, union pm_result *res);
+bool pm_parse_step(struct pm_parser p[1], const char *src, long len, struct pm_state *state, struct pm_result *res);
+bool pm_parse(struct pm_parser p[1], const char *src, long len, struct pm_result *res);
 
 extern struct pm_parser pm_space;
 extern struct pm_parser pm_newline;
@@ -123,31 +123,31 @@ struct pm_value pm_prim_i32(int32_t i32);
 struct pm_value pm_prim_u32(uint32_t u32);
 struct pm_value pm_prim_f(float f);
 
-bool pm_one_of_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
+bool pm_one_of_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
 void pm_one_of(struct pm_str *str, struct pm_parser *q);
-bool pm_none_of_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
+bool pm_none_of_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
 void pm_none_of(struct pm_str *str, struct pm_parser *q);
-bool pm_char_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
+bool pm_char_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
 void pm_char(char c, struct pm_parser *q);
-bool pm_satisfy_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
+bool pm_satisfy_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
 void pm_satisfy(bool (*fn)(char), struct pm_parser *q);
-bool pm_string_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
+bool pm_string_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
 void pm_string(struct pm_str *str, struct pm_parser *q);
-bool pm_or_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
+bool pm_or_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
 void pm_or(struct pm_parser p[2], struct pm_parser *q);
-bool pm_and_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
+bool pm_and_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
 void pm_and(struct pm_parser p[2], struct pm_parser *q);
-bool pm_try_fn(union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
+bool pm_try_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
 void pm_try(struct pm_parser *p, struct pm_parser *q);
-bool pm_parse(struct pm_parser *p, const char *src, long len, union pm_result *res);
-bool pm_space_fn(union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
-bool pm_upper_fn(union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
-bool pm_lower_fn(union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
-bool pm_alpha_num_fn(union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
-bool pm_letter_fn(union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
-bool pm_digit_fn(union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
-bool pm_hex_digit_fn(union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
-bool pm_oct_digit_fn(union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
-bool pm_any_char_fn(union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res);
+bool pm_parse(struct pm_parser *p, const char *src, long len, struct pm_result *res);
+bool pm_space_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
+bool pm_upper_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
+bool pm_lower_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
+bool pm_alpha_num_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
+bool pm_letter_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
+bool pm_digit_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
+bool pm_hex_digit_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
+bool pm_oct_digit_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
+bool pm_any_char_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
 
 #endif

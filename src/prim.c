@@ -91,7 +91,7 @@ struct pm_value pm_prim_f(float f)
 	};
 }
 
-bool pm_or_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
+bool pm_or_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
 {
 	return
 		d.parser[0].fn(d.parser[0].self, src, len, state, res) ||
@@ -106,7 +106,7 @@ void pm_or(struct pm_parser p[2], struct pm_parser *q)
 	};
 }
 
-bool pm_and_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
+bool pm_and_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
 {
 	return
 		d.parser[0].fn(d.parser[0].self, src, len, state, &res[0]) &&
@@ -121,15 +121,14 @@ void pm_and(struct pm_parser p[2], struct pm_parser *q)
 	};
 }
 
-bool pm_try_fn(union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
+bool pm_try_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
 {
 	struct pm_state backup = *state;
-	if (d.parser->fn(d.parser->self, src, len, state, res)) {
+	if (pm_parse_step(d.parser, src, len, state, res)) {
 		return true;
-	} else {
-		*state = backup;
-		return false;
 	}
+	*state = backup;
+	return false;
 }
 
 void pm_try(struct pm_parser *p, struct pm_parser *q)
@@ -140,7 +139,7 @@ void pm_try(struct pm_parser *p, struct pm_parser *q)
 	};
 }
 
-bool pm_eof_fn(union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
+bool pm_eof_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
 {
 	if (len == state->pos) {
 		if (res) {
