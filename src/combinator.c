@@ -28,8 +28,7 @@ bool pm_choice_try_fn(const union pm_data d, const char *src, long len, struct p
 	struct pm_parsers *p = d.ptr;
 	struct pm_parser try;
 	for (long i = 0; i < p->len; i++) {
-		struct pm_parser *q = p->data + i;
-		pm_try(q, &try);
+		pm_try(p->data + i, &try);
 		if (pm_parse_step(&try, src, len, state, res)) {
 			return true;
 		}
