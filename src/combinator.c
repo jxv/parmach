@@ -24,3 +24,23 @@ void pm_choice(struct pm_parsers *p, struct pm_parser *q)
 		.fn = pm_choice_fn,
 	};
 }
+
+bool pm_trail_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
+{
+	struct pm_str *str = res->value.data.str;
+	str->data = state->pos + src;
+	str->len = 0;
+	while (state->pos < len) {
+		const char c = pm_step_state(src, state);
+		if (c == '\n' || state->pos == len) {
+			break;
+		}
+		str->len++;
+	}
+	return true;
+}
+
+struct pm_parser pm_trail = {
+	.self.ptr = NULL,
+	.fn = pm_trail_fn,
+};

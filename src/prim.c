@@ -139,3 +139,22 @@ void pm_try(struct pm_parser *p, struct pm_parser *q)
 		.fn = pm_try_fn
 	};
 }
+
+bool pm_eof_fn(union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
+{
+	if (len == state->pos) {
+		if (res) {
+			res->value.data.ptr = NULL;
+		}
+		return true; 
+	}
+	if (res) {
+		res->error.state = *state;
+	}
+	return false;
+}
+
+struct pm_parser pm_eof = {
+	.self.ptr = NULL,
+	.fn = pm_eof_fn,
+};

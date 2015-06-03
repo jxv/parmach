@@ -18,6 +18,13 @@ static bool is_upper(char c)
 	return c >= 'A' && c <= 'Z';
 }
 
+static bool is_hexadecimal(char c)
+{
+	return is_number(c) ||
+		(c >= 'a' && c <= 'f') ||
+		(c >= 'A' && c <= 'F');
+}
+
 bool pm_one_of_fn(const union pm_data d, const char *src, long len, struct pm_state *state, union pm_result *res)
 {
 	if (pm_out_of_range(src, len, state, res)) {
@@ -26,11 +33,15 @@ bool pm_one_of_fn(const union pm_data d, const char *src, long len, struct pm_st
 	const char c = pm_step_state(src, state);
 	for (long i = 0; i < d.str->len; i++) {
 		if (c == d.str->data[i]) {
-			res->value = pm_prim_c(c);
+			if (res) {
+				res->value = pm_prim_c(c);
+			}
 			return true;
 		}
 	}
-	res->error.state = *state;
+	if (res) {
+		res->error.state = *state;
+	}
 	return false;
 }
 
@@ -50,10 +61,15 @@ bool pm_none_of_fn(const union pm_data d, const char *src, long len, struct pm_s
 	const char c = pm_step_state(src, state);
 	for (long i = 0; i < d.str->len; i++) {
 		if (c == d.str->data[i]) {
+			if (res) {
+				res->error.state = *state;
+			}
 			return false;
 		}
 	}
-	res->value = pm_prim_c(c);
+	if (res) {
+		res->value = pm_prim_c(c);
+	}
 	return true;
 }
 
@@ -72,10 +88,14 @@ bool pm_char_fn(const union pm_data d, const char *src, long len, struct pm_stat
 	}
 	const char c = pm_step_state(src, state);
 	if (c == d.prim.c) {
-		res->value = pm_prim_c(c);
+		if (res) {
+			res->value = pm_prim_c(c);
+		}
 		return true;
 	}
-	res->error.state = *state;
+	if (res) {
+		res->error.state = *state;
+	}
 	return false;
 }
 
@@ -95,10 +115,14 @@ bool pm_satisfy_fn(const union pm_data d, const char *src, long len, struct pm_s
 	const char c = pm_step_state(src, state);
 	bool (**fn)(char) = d.ptr;
 	if ((*fn)(c)) {
-		res->value = pm_prim_c(c);
+		if (res) {
+			res->value = pm_prim_c(c);
+		}
 		return true;
 	}
-	res->error.state = *state;
+	if (res) {
+		res->error.state = *state;
+	}
 	return false;
 }
 
@@ -118,11 +142,13 @@ bool pm_string_fn(const union pm_data d, const char *src, long len, struct pm_st
 	for (long i = 0; i < d.str->len; i++) {
 		const char c = pm_step_state(src, state);
 		if (c != d.str->data[i]) {
-			res->error.state = *state;
+			if (res) {
+				res->error.state = *state;
+			}
 			return false;
 		}
 	}
-	{
+	if (res) {
 		// TODO: group, tag
 		res->value.data.str->data = src;
 		res->value.data.str->len = d.str->len;
@@ -145,10 +171,14 @@ bool pm_space_fn(union pm_data d, const char *src, long len, struct pm_state *st
 	}
 	const char c = pm_step_state(src, state);
 	if (c == ' ' || c == '\t') {
-		res->value = pm_prim_c(c);
+		if (res) {
+			res->value = pm_prim_c(c);
+		}
 		return true;
 	}
-	res->error.state = *state;
+	if (res) {
+		res->error.state = *state;
+	}
 	return false;
 }
 
@@ -174,10 +204,14 @@ bool pm_upper_fn(const union pm_data d, const char *src, long len, struct pm_sta
 	}
 	const char c = pm_step_state(src, state);
 	if (c >= 'A' && c <= 'Z') {
-		res->value = pm_prim_c(c);
+		if (res) {
+			res->value = pm_prim_c(c);
+		}
 		return true;
 	}
-	res->error.state = *state;
+	if (res) {
+		res->error.state = *state;
+	}
 	return false;
 }
 
@@ -193,10 +227,14 @@ bool pm_lower_fn(const union pm_data d, const char *src, long len, struct pm_sta
 	}
 	const char c = pm_step_state(src, state);
 	if (is_lower(c)) {
-		res->value = pm_prim_c(c);
+		if (res) {
+			res->value = pm_prim_c(c);
+		}
 		return true;
 	}
-	res->error.state = *state;
+	if (res) {
+		res->error.state = *state;
+	}
 	return false;
 }
 
@@ -212,10 +250,14 @@ bool pm_alpha_num_fn(const union pm_data d, const char *src, long len, struct pm
 	}
 	const char c = pm_step_state(src, state);
 	if (is_lower(c) || is_upper(c) || is_number(c)) {
-		res->value = pm_prim_c(c);
+		if (res) {
+			res->value = pm_prim_c(c);
+		}
 		return true;
 	}
-	res->error.state = *state;
+	if (res) {
+		res->error.state = *state;
+	}
 	return false;
 }
 
@@ -231,10 +273,14 @@ bool pm_letter_fn(const union pm_data d, const char *src, long len, struct pm_st
 	}
 	const char c = pm_step_state(src, state);
 	if (is_lower(c) || is_upper(c)) {
-		res->value = pm_prim_c(c);
+		if (res) {
+			res->value = pm_prim_c(c);
+		}
 		return true;
 	}
-	res->error.state = *state;
+	if (res) {
+		res->error.state = *state;
+	}
 	return false;
 }
 
@@ -250,10 +296,14 @@ bool pm_digit_fn(const union pm_data d, const char *src, long len, struct pm_sta
 	}
 	const char c = pm_step_state(src, state);
 	if (is_number(c)) {
-		res->value = pm_prim_c(c);
+		if (res) {
+			res->value = pm_prim_c(c);
+		}
 		return true;
 	}
-	res->error.state = *state;
+	if (res) {
+		res->error.state = *state;
+	}
 	return false;
 }
 
@@ -268,11 +318,15 @@ bool pm_hex_digit_fn(const union pm_data d, const char *src, long len, struct pm
 		return false;
 	}
 	const char c = pm_step_state(src, state);
-	if (is_number(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
-		res->value = pm_prim_c(c);
+	if (is_hexadecimal(c)) {
+		if (res) {
+			res->value = pm_prim_c(c);
+		}
 		return true;
 	}
-	res->error.state = *state;
+	if (res) {
+		res->error.state = *state;
+	}
 	return false;
 }
 
@@ -288,10 +342,14 @@ bool pm_oct_digit_fn(const union pm_data d, const char *src, long len, struct pm
 	}
 	const char c = pm_step_state(src, state);
 	if (c >= '0' && c <= '7') {
-		res->value = pm_prim_c(c);
+		if (res) {
+			res->value = pm_prim_c(c);
+		}
 		return true;
 	}
-	res->error.state = *state;
+	if (res) {
+		res->error.state = *state;
+	}
 	return false;
 }
 
@@ -305,7 +363,9 @@ bool pm_any_char_fn(const union pm_data d, const char *src, long len, struct pm_
 	if (pm_out_of_range(src, len, state, res)) {
 		return false;
 	}
-	res->value = pm_prim_c(pm_step_state(src, state));
+	if (res) {
+		res->value = pm_prim_c(pm_step_state(src, state));
+	}
 	return true;
 }
 
