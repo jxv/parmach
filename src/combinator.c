@@ -63,3 +63,37 @@ struct pm_parser pm_trail = {
 	.self.ptr = NULL,
 	.fn = pm_trail_fn,
 };
+
+bool pm_until_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
+{
+	struct pm_str *str = res->value.data.str;
+	str->data = state->pos + src;
+	str->len = 0;
+
+	struct pm_parser try;
+	pm_try(d.parser, &try);
+	while (state->pos < len) {
+		if (pm_parse_step(&try, src, len, state, NULL)) {
+			return true;
+		}
+		if (pm_out_of_range(src, len, state, NULL)) {
+			return false;
+		}
+		pm_step_state(src, state);
+		str->len++;
+	}
+	return true;
+}
+
+void pm_until(struct pm_parser *p, struct pm_parser *q)
+{
+	*q = (struct pm_parser) {
+		.self.parser = p,
+		.fn = pm_until_fn,
+	};
+}
+
+struct pm_parser pm_until_space = {
+	.self.parser = &pm_space,
+	.fn = pm_until_fn,
+};

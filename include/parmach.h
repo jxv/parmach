@@ -95,6 +95,7 @@ void pm_try(struct pm_parser p[1], struct pm_parser *q);
 
 void pm_choice(struct pm_parsers *p, struct pm_parser *q);
 void pm_choice_try(struct pm_parsers *p, struct pm_parser *q);
+void pm_until(struct pm_parser *p, struct pm_parser *q);
 
 bool pm_parse_step(struct pm_parser p[1], const char *src, long len, struct pm_state *state, struct pm_result *res);
 bool pm_parse(struct pm_parser p[1], const char *src, long len, struct pm_result *res);
@@ -112,6 +113,7 @@ extern struct pm_parser pm_oct_digit;
 extern struct pm_parser pm_any_char;
 extern struct pm_parser pm_eof;
 extern struct pm_parser pm_trail;
+extern struct pm_parser pm_until_space;
 
 struct pm_value pm_prim_b(bool b);
 struct pm_value pm_prim_c(char c);
