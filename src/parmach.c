@@ -1,6 +1,14 @@
 #include "parmach.h"
 #include "internal.h"
 
+bool pm_fail_fn(const char *src, long len, struct pm_state *state, struct pm_result *res)
+{
+	if (res) {
+		res->error.state = *state;
+	}
+	return false;
+}
+
 bool pm_out_of_range(const char *src, long len, struct pm_state *state, struct pm_result *res)
 {
 	if (state->pos >= 0 && state->pos < len) {

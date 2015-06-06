@@ -100,6 +100,7 @@ void pm_until(struct pm_parser *p, struct pm_parser *q);
 bool pm_parse_step(struct pm_parser p[1], const char *src, long len, struct pm_state *state, struct pm_result *res);
 bool pm_parse(struct pm_parser p[1], const char *src, long len, struct pm_result *res);
 
+extern struct pm_parser pm_fail;
 extern struct pm_parser pm_space;
 extern struct pm_parser pm_newline;
 extern struct pm_parser pm_tab;
