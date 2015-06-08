@@ -8,19 +8,15 @@ bool pm_choice_fn(const union pm_data d, const char *src, long len, struct pm_st
 	struct pm_parsers *p = d.ptr;
 	for (long i = 0; i < p->len; i++) {
 		struct pm_parser *q = p->data + i;
-		if ((q->fn)(q->self, src, len, state, res)) {
+		if ((q->fn)(q->self, src, len, state, res))
 			return true;
-		}
 	}
 	return false;
 }
 
 void pm_choice(struct pm_parsers *p, struct pm_parser *q)
 {
-	*q = (struct pm_parser) {
-		.self.ptr = p,
-		.fn = pm_choice_fn,
-	};
+	*q = (struct pm_parser) { .self.ptr = p, pm_choice_fn };
 }
 
 bool pm_choice_try_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
@@ -29,71 +25,54 @@ bool pm_choice_try_fn(const union pm_data d, const char *src, long len, struct p
 	struct pm_parser try;
 	for (long i = 0; i < p->len; i++) {
 		pm_try(p->data + i, &try);
-		if (pm_parse_step(&try, src, len, state, res)) {
+		if (pm_parse_step(&try, src, len, state, res))
 			return true;
-		}
 	}
 	return false;
 }
 
 void pm_choice_try(struct pm_parsers *p, struct pm_parser *q)
 {
-	*q = (struct pm_parser) {
-		.self.ptr = p,
-		.fn = pm_choice_try_fn,
-	};
+	*q = (struct pm_parser) { .self.ptr = p, pm_choice_try_fn };
 }
 
 bool pm_trail_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
 {
-	struct pm_str *str = res->value.data.str;
-	str->data = state->pos + src;
-	str->len = 0;
+	str_t *s = res->value.data.ptr;
+	s->data = state->pos + (char *)src;
+	s->len = 0;
 	while (state->pos < len) {
 		const char c = pm_step_state(src, state);
-		if (c == '\n' || state->pos == len) {
+		if (c == '\n' || state->pos == len)
 			break;
-		}
-		str->len++;
+		s->len++;
 	}
 	return true;
 }
 
-struct pm_parser pm_trail = {
-	.self.ptr = NULL,
-	.fn = pm_trail_fn,
-};
+struct pm_parser pm_trail = { .self.ptr = NULL, pm_trail_fn };
 
 bool pm_until_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
 {
-	struct pm_str *str = res->value.data.str;
-	str->data = state->pos + src;
-	str->len = 0;
-
+	str_t *s = res->value.data.ptr;
+	s->data = state->pos + (char *)src;
+	s->len = 0;
 	struct pm_parser try;
-	pm_try(d.parser, &try);
+	pm_try(d.ptr, &try);
 	while (state->pos < len) {
-		if (pm_parse_step(&try, src, len, state, NULL)) {
+		if (pm_parse_step(&try, src, len, state, NULL))
 			return true;
-		}
-		if (pm_out_of_range(src, len, state, NULL)) {
+		if (pm_out_of_range(src, len, state, NULL))
 			return false;
-		}
 		pm_step_state(src, state);
-		str->len++;
+		s->len++;
 	}
 	return true;
 }
 
 void pm_until(struct pm_parser *p, struct pm_parser *q)
 {
-	*q = (struct pm_parser) {
-		.self.parser = p,
-		.fn = pm_until_fn,
-	};
+	*q = (struct pm_parser) { .self.ptr = p, pm_until_fn };
 }
 
-struct pm_parser pm_until_space = {
-	.self.parser = &pm_space,
-	.fn = pm_until_fn,
-};
+struct pm_parser pm_until_space = { .self.ptr = &pm_space, pm_until_fn };

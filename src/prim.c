@@ -93,67 +93,54 @@ struct pm_value pm_prim_f(float f)
 
 bool pm_or_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
 {
+	struct pm_parser *p1 = d.ptr, *p2 = p1 + 1;
 	return
-		d.parser[0].fn(d.parser[0].self, src, len, state, res) ||
-		d.parser[1].fn(d.parser[1].self, src, len, state, res);
+		p1->fn(p1->self, src, len, state, res) ||
+		p2->fn(p2->self, src, len, state, res);
 }
 
 void pm_or(struct pm_parser p[2], struct pm_parser *q)
 {
-	*q = (struct pm_parser) {
-		.self.parser = p,
-		.fn = pm_or_fn,
-	};
+	*q = (struct pm_parser) { .self.ptr = p, pm_or_fn };
 }
 
 bool pm_and_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
 {
+	struct pm_parser *p1 = d.ptr, *p2 = p1 + 1;
 	return
-		d.parser[0].fn(d.parser[0].self, src, len, state, &res[0]) &&
-		d.parser[1].fn(d.parser[1].self, src, len, state, &res[1]);
+		p1->fn(p1->self, src, len, state, res) &&
+		p2->fn(p2->self, src, len, state, res);
 }
 
 void pm_and(struct pm_parser p[2], struct pm_parser *q)
 {
-	*q = (struct pm_parser) {
-		.self.parser = p,
-		.fn = pm_and_fn,
-	};
+	*q = (struct pm_parser) { .self.ptr = p, pm_and_fn };
 }
 
 bool pm_try_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
 {
 	struct pm_state backup = *state;
-	if (pm_parse_step(d.parser, src, len, state, res)) {
+	if (pm_parse_step(d.ptr, src, len, state, res))
 		return true;
-	}
 	*state = backup;
 	return false;
 }
 
 void pm_try(struct pm_parser *p, struct pm_parser *q)
 {
-	*q = (struct pm_parser) {
-		.self.parser = p,
-		.fn = pm_try_fn
-	};
+	*q = (struct pm_parser) { .self.ptr = p, pm_try_fn };
 }
 
 bool pm_eof_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
 {
 	if (len == state->pos) {
-		if (res) {
+		if (res)
 			res->value.data.ptr = NULL;
-		}
 		return true; 
 	}
-	if (res) {
+	if (res)
 		res->error.state = *state;
-	}
 	return false;
 }
 
-struct pm_parser pm_eof = {
-	.self.ptr = NULL,
-	.fn = pm_eof_fn,
-};
+struct pm_parser pm_eof = { .self.ptr = NULL, pm_eof_fn };

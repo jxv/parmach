@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <wchar.h>
+#include <str.h>
 
 struct pm_parser;
 
@@ -14,11 +15,6 @@ struct pm_state {
 
 struct pm_error {
 	struct pm_state state;
-};
-
-struct pm_str {
-	const char *data;
-	long len;
 };
 
 struct pm_parsers {
@@ -54,8 +50,6 @@ union pm_prim {
 
 union pm_data {
 	union pm_prim prim;
-	struct pm_parser *parser;
-	struct pm_str *str;
 	void *ptr;
 };
 
@@ -83,11 +77,11 @@ bool pm_out_of_range(const char *src, long len, struct pm_state *state, struct p
 
 char pm_step_state(const char *src, struct pm_state *state);
 
-void pm_one_of(struct pm_str *str, struct pm_parser *q);
-void pm_none_of(struct pm_str *str, struct pm_parser *q);
+void pm_one_of(str_t *str, struct pm_parser *q);
+void pm_none_of(str_t *str, struct pm_parser *q);
 void pm_char(char c, struct pm_parser *q);
 void pm_satisfy(bool (*fn)(char), struct pm_parser *q);
-void pm_string(struct pm_str *str, struct pm_parser *q);
+void pm_string(str_t *str, struct pm_parser *q);
 
 void pm_or(struct pm_parser p[2], struct pm_parser *q);
 void pm_and(struct pm_parser p[2], struct pm_parser *q);
@@ -129,15 +123,15 @@ struct pm_value pm_prim_u32(uint32_t u32);
 struct pm_value pm_prim_f(float f);
 
 bool pm_one_of_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
-void pm_one_of(struct pm_str *str, struct pm_parser *q);
+void pm_one_of(str_t *str, struct pm_parser *q);
 bool pm_none_of_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
-void pm_none_of(struct pm_str *str, struct pm_parser *q);
+void pm_none_of(str_t *str, struct pm_parser *q);
 bool pm_char_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
 void pm_char(char c, struct pm_parser *q);
 bool pm_satisfy_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
 void pm_satisfy(bool (*fn)(char), struct pm_parser *q);
 bool pm_string_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
-void pm_string(struct pm_str *str, struct pm_parser *q);
+void pm_string(str_t *str, struct pm_parser *q);
 bool pm_or_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
 void pm_or(struct pm_parser p[2], struct pm_parser *q);
 bool pm_and_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res);
