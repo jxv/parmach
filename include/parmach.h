@@ -112,6 +112,7 @@ extern struct pm_parser pm_digit;
 extern struct pm_parser pm_hex_digit;
 extern struct pm_parser pm_oct_digit;
 extern struct pm_parser pm_any_char;
+extern struct pm_parser pm_crlf;
 extern struct pm_parser pm_eof;
 extern struct pm_parser pm_trail;
 extern struct pm_parser pm_until_space;

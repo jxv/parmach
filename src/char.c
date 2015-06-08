@@ -373,3 +373,25 @@ struct pm_parser pm_any_char = {
 	.self.parser = NULL,
 	.fn = pm_any_char_fn,
 };
+
+bool pm_crlf_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
+{
+	if (pm_out_of_range(src, len, state, res))
+		return false;
+	if (pm_step_state(src, state) != '\r')
+		goto fail;
+	if (pm_out_of_range(src, len, state, res))
+		return false;
+	if (pm_step_state(src, state) != '\n')
+		goto fail;
+	return true;
+fail:
+	if (res)
+		res->error.state = *state;
+	return false;
+}
+
+struct pm_parser pm_crlf = {
+	.self.ptr = NULL,
+	.fn = pm_crlf_fn,
+};
