@@ -1,5 +1,4 @@
 #include "parmach.h"
-#include "internal.h"
 
 #include <stdio.h>
 

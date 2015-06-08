@@ -1,5 +1,4 @@
 #include "parmach.h"
-#include "internal.h"
 
 bool pm_fail_fn(const char *src, long len, struct pm_state *state, struct pm_result *res)
 {

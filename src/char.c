@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "parmach.h"
-#include "internal.h"
 
 static bool is_number(char c)
 {

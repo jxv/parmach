@@ -1,5 +1,4 @@
 #include "parmach.h"
-#include "internal.h"
 
 struct pm_value pm_prim_b(bool b)
 {
