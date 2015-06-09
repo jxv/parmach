@@ -69,7 +69,7 @@ bool pm_out_of_range(const str_t *, pm_state_t *, pm_result_t *);
 
 char pm_step_state(const str_t *, pm_state_t *);
 
-bool pm_parse_step(pm_parser_t p[1], const str_t *src, pm_state_t *state, pm_result_t *res);
+bool pm_parse_step(const pm_parser_t p[1], const str_t *src, pm_state_t *state, pm_result_t *res);
 
 bool pm_try_fn(pm_data_t, const str_t *, pm_state_t *, pm_result_t *);
 bool pm_one_of_fn(const pm_data_t, const str_t *, pm_state_t *, pm_result_t *);
@@ -100,7 +100,7 @@ extern pm_parser_t pm_eof;
 extern pm_parser_t pm_trail;
 extern pm_parser_t pm_until_space;
 
-bool pm_parse(pm_parser_t p[1], const str_t *src, pm_result_t *res);
+bool pm_parse(const pm_parser_t p[1], const str_t *src, pm_result_t *res);
 
 #define PM_PAR(PTR, FN) { .data.ptr = PTR, .fn = FN }
 #define PM_FN(FN) PM_PAR(NULL, FN)
