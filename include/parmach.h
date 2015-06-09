@@ -102,16 +102,18 @@ extern pm_parser_t pm_until_space;
 
 bool pm_parse(pm_parser_t p[1], const str_t *src, pm_result_t *res);
 
-#define PM_FN(func) { .data.ptr = NULL, .fn = func }
-
-#define PM_TRY(PAR) { .data.ptr = PAR, .fn = pm_try_fn }
-#define PM_ONE_OF(STR) { .data.ptr = STR, .fn = pm_one_of_fn }
-#define PM_NONE_OF(STR) { .data.ptr = STR, .fn = pm_none_of_fn }
-#define PM_CHAR(C) { .data.prim.c = C, .fn = pm_char_fn }
-#define PM_STAISFY(CHAR_TO_BOOL) { .data.ptr = CHAR_TO_BOOL, .fn = pm_satisfy_fn }
-#define PM_STRING(STR) { .data.ptr = STR, .fn = pm_string_fn }
-#define PM_OR(PAR2) { .data.ptr = PAR2, .fn = pm_or_fn }
-#define PM_AND(PAR2) { .data.ptr = PAR2, .fn = pm_and_fn }
-#define PM_UNTIL(PAR) { .data.ptr = PAR, .fn = pm_until_fn }
+#define PM_PAR(PTR, FN) { .data.ptr = PTR, .fn = FN }
+#define PM_FN(FN) PM_PAR(NULL, FN)
+#define PM_TRY(PAR) PM_PAR(PAR, pm_try_fn)
+#define PM_ONE_OF(STR) PM_PAR(STR, pm_one_of_fn)
+#define PM_NONE_OF(STR) PM_PAR(STR, pm_none_of_fn)
+#define PM_CHAR(CHAR) { .data.prim.c = CHAR, .fn = pm_char_fn }
+#define PM_STAISFY(FN) PM_PAR(FN, pm_satisfy_fn) // FN = bool (*)(char)
+#define PM_STRING(STR) PM_PAR(STR, pm_string_fn)
+#define PM_OR(PAR2) PM_PAR(PAR2, pm_or_fn)
+#define PM_AND(PAR2) PM_PAR(PAR2, pm_and_fn)
+#define PM_UNTIL(PAR) PM_PAR(PAR, pm_until_fn)
+#define PM_CHOICE(PAR) PM_PAR(PAR, pm_choice_fn)
+#define PM_CHOICE_TRY(PAR) PM_PAR(PAR, pm_choice_try_fn)
 
 #endif
