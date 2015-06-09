@@ -59,7 +59,7 @@ typedef struct pm_result pm_result_t;
 typedef bool (*pm_parser_fn) (const pm_data_t, const str_t *, pm_state_t *, pm_result_t *);
 
 struct pm_parser {
-	pm_data_t data;
+	const pm_data_t data;
 	pm_parser_fn fn;
 };
 
