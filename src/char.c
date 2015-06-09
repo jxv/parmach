@@ -128,11 +128,11 @@ bool pm_space_fn(pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *
 	return false;
 }
 
-struct pm_parser pm_space = PM_FN(pm_space_fn);
+pm_parser_t pm_space = PM_FN(pm_space_fn);
 
-struct pm_parser pm_newline = PM_CHAR('\n');
+pm_parser_t pm_newline = PM_CHAR('\n');
 
-struct pm_parser pm_tab = PM_CHAR('\t');
+pm_parser_t pm_tab = PM_CHAR('\t');
 
 bool pm_upper_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
@@ -149,7 +149,7 @@ bool pm_upper_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_resu
 	return false;
 }
 
-struct pm_parser pm_upper = PM_FN(pm_upper_fn);
+pm_parser_t pm_upper = PM_FN(pm_upper_fn);
 
 bool pm_lower_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
@@ -166,7 +166,7 @@ bool pm_lower_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_resu
 	return false;
 }
 
-struct pm_parser pm_lower = PM_FN(pm_lower_fn);
+pm_parser_t pm_lower = PM_FN(pm_lower_fn);
 
 bool pm_alpha_num_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
@@ -183,7 +183,7 @@ bool pm_alpha_num_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_
 	return false;
 }
 
-struct pm_parser pm_alpha_num = PM_FN(pm_alpha_num_fn);
+pm_parser_t pm_alpha_num = PM_FN(pm_alpha_num_fn);
 
 bool pm_letter_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
@@ -200,7 +200,7 @@ bool pm_letter_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_res
 	return false;
 }
 
-struct pm_parser pm_letter = PM_FN(pm_letter_fn);
+pm_parser_t pm_letter = PM_FN(pm_letter_fn);
 
 bool pm_digit_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
@@ -217,7 +217,7 @@ bool pm_digit_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_resu
 	return false;
 }
 
-struct pm_parser pm_digit = PM_FN(pm_digit_fn);
+pm_parser_t pm_digit = PM_FN(pm_digit_fn);
 
 bool pm_hex_digit_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
@@ -234,7 +234,7 @@ bool pm_hex_digit_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_
 	return false;
 }
 
-struct pm_parser pm_hex_digit_num = PM_FN(pm_hex_digit_fn);
+pm_parser_t pm_hex_digit_num = PM_FN(pm_hex_digit_fn);
 
 bool pm_oct_digit_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
@@ -251,7 +251,7 @@ bool pm_oct_digit_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_
 	return false;
 }
 
-struct pm_parser pm_oct_digit = PM_FN(pm_oct_digit_fn);
+pm_parser_t pm_oct_digit = PM_FN(pm_oct_digit_fn);
 
 bool pm_any_char_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
@@ -262,7 +262,7 @@ bool pm_any_char_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_r
 	return true;
 }
 
-struct pm_parser pm_any_char = PM_FN(pm_any_char_fn);
+pm_parser_t pm_any_char = PM_FN(pm_any_char_fn);
 
 bool pm_crlf_fn(pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
@@ -281,4 +281,4 @@ fail:
 	return false;
 }
 
-struct pm_parser pm_crlf = PM_FN(pm_crlf_fn);
+pm_parser_t pm_crlf = PM_FN(pm_crlf_fn);
