@@ -24,287 +24,209 @@ static bool is_hexadecimal(char c)
 		(c >= 'A' && c <= 'F');
 }
 
-bool pm_one_of_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
+bool pm_one_of_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
 	const str_t *s = d.ptr;
-	if (pm_out_of_range(src, len, state, res)) {
+	if (pm_out_of_range(src, state, res))
 		return false;
-	}
 	const char c = pm_step_state(src, state);
 	for (long i = 0; i < s->len; i++) {
 		if (c == s->data[i]) {
-			if (res) {
-				res->value = pm_prim_c(c);
-			}
+			if (res)
+				res->data.prim.c = c;
 			return true;
 		}
 	}
-	if (res) {
+	if (res)
 		res->error.state = *state;
-	}
 	return false;
 }
 
-void pm_one_of(str_t *str, struct pm_parser *q)
-{
-	*q = (struct pm_parser) {
-		.self.ptr = str,
-		.fn = pm_one_of_fn,
-	};
-}
-
-bool pm_none_of_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
+bool pm_none_of_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
 	const str_t *s = d.ptr;
-	if (pm_out_of_range(src, len, state, res)) {
+	if (pm_out_of_range(src, state, res))
 		return false;
-	}
 	const char c = pm_step_state(src, state);
 	for (long i = 0; i < s->len; i++) {
 		if (c == s->data[i]) {
-			if (res) {
+			if (res)
 				res->error.state = *state;
-			}
 			return false;
 		}
 	}
-	if (res) {
-		res->value = pm_prim_c(c);
-	}
+	if (res)
+		res->data.prim.c = c;
 	return true;
 }
 
-void pm_none_of(str_t *s, struct pm_parser *q)
+bool pm_char_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
-	*q = (struct pm_parser) { .self.ptr = s, pm_none_of_fn };
-}
-
-bool pm_char_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
-{
-	if (pm_out_of_range(src, len, state, res)) {
+	if (pm_out_of_range(src, state, res))
 		return false;
-	}
 	const char c = pm_step_state(src, state);
 	if (c == d.prim.c) {
-		if (res) {
-			res->value = pm_prim_c(c);
-		}
+		if (res)
+			res->data.prim.c = c;
 		return true;
 	}
-	if (res) {
+	if (res)
 		res->error.state = *state;
-	}
 	return false;
 }
 
-void pm_char(char c, struct pm_parser *q)
+bool pm_satisfy_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
-	*q = (struct pm_parser) {
-		.self.prim.c = c,
-		.fn = pm_char_fn,
-	};
-}
-
-bool pm_satisfy_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
-{
-	if (pm_out_of_range(src, len, state, res)) {
+	if (pm_out_of_range(src, state, res))
 		return false;
-	}
 	const char c = pm_step_state(src, state);
 	bool (**fn)(char) = d.ptr;
 	if ((*fn)(c)) {
-		if (res) {
-			res->value = pm_prim_c(c);
-		}
+		if (res)
+			res->data.prim.c = c;
 		return true;
 	}
-	if (res) {
+	if (res)
 		res->error.state = *state;
-	}
 	return false;
 }
 
-void pm_satisfy(bool (*fn)(char), struct pm_parser *q)
-{
-	*q = (struct pm_parser) {
-		.self.ptr = &fn,
-		.fn = pm_satisfy_fn,
-	};
-}
-
-bool pm_string_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
+bool pm_string_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
 	const str_t *s = d.ptr;
-	if (pm_out_of_range(src, len + s->len, state, res)) {
-		return false;
-	}
 	for (long i = 0; i < s->len; i++) {
+		if (pm_out_of_range(src, state, res))
+			return false;
 		const char c = pm_step_state(src, state);
 		if (c != s->data[i]) {
-			if (res) {
+			if (res)
 				res->error.state = *state;
-			}
 			return false;
 		}
 	}
 	if (res) {
 		// TODO: group, tag
-		str_t *sv = res->value.data.ptr;
+		str_t *sv = res->data.ptr;
 		sv->data = (char*)src;
 		sv->len = s->len;
 	}
 	return true;
 }
 
-void pm_string(str_t *s, struct pm_parser *q)
+bool pm_space_fn(pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
-	*q = (struct pm_parser) { .self.ptr = s, pm_string_fn };
-}
-
-bool pm_space_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
-{
-	if (pm_out_of_range(src, len, state, res)) {
+	if (pm_out_of_range(src, state, res))
 		return false;
-	}
 	const char c = pm_step_state(src, state);
 	if (c == ' ' || c == '\t') {
-		if (res) {
-			res->value = pm_prim_c(c);
-		}
+		if (res)
+			res->data.prim.c = c;
 		return true;
 	}
-	if (res) {
+	if (res)
 		res->error.state = *state;
-	}
 	return false;
 }
 
-struct pm_parser pm_space = { .self.ptr = NULL, pm_space_fn };
+struct pm_parser pm_space = PM_FN(pm_space_fn);
 
-struct pm_parser pm_newline = { .self.prim.c = '\n', pm_char_fn };
+struct pm_parser pm_newline = PM_CHAR('\n');
 
-struct pm_parser pm_tab = { .self.prim.c = '\t', pm_char_fn };
+struct pm_parser pm_tab = PM_CHAR('\t');
 
-bool pm_upper_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
+bool pm_upper_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
-	if (pm_out_of_range(src, len, state, res)) {
+	if (pm_out_of_range(src,  state, res))
 		return false;
-	}
 	const char c = pm_step_state(src, state);
 	if (c >= 'A' && c <= 'Z') {
-		if (res) {
-			res->value = pm_prim_c(c);
-		}
+		if (res)
+			res->data.prim.c = c;
 		return true;
 	}
-	if (res) {
+	if (res)
 		res->error.state = *state;
-	}
 	return false;
 }
 
-struct pm_parser pm_upper = {
-	.self.ptr = NULL,
-	.fn = pm_upper_fn,
-};
+struct pm_parser pm_upper = PM_FN(pm_upper_fn);
 
-bool pm_lower_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
+bool pm_lower_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
-	if (pm_out_of_range(src, len, state, res)) {
+	if (pm_out_of_range(src, state, res))
 		return false;
-	}
 	const char c = pm_step_state(src, state);
 	if (is_lower(c)) {
-		if (res) {
-			res->value = pm_prim_c(c);
-		}
+		if (res)
+			res->data.prim.c = c;
 		return true;
 	}
-	if (res) {
+	if (res)
 		res->error.state = *state;
-	}
 	return false;
 }
 
-struct pm_parser pm_lower = {
-	.self.ptr = NULL,
-	.fn = pm_lower_fn,
-};
+struct pm_parser pm_lower = PM_FN(pm_lower_fn);
 
-bool pm_alpha_num_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
+bool pm_alpha_num_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
-	if (pm_out_of_range(src, len, state, res)) {
+	if (pm_out_of_range(src, state, res))
 		return false;
-	}
 	const char c = pm_step_state(src, state);
 	if (is_lower(c) || is_upper(c) || is_number(c)) {
-		if (res) {
-			res->value = pm_prim_c(c);
-		}
+		if (res)
+			res->data.prim.c = c;
 		return true;
 	}
-	if (res) {
+	if (res)
 		res->error.state = *state;
-	}
 	return false;
 }
 
-struct pm_parser pm_alpha_num = {
-	.self.ptr = NULL,
-	.fn = pm_alpha_num_fn,
-};
+struct pm_parser pm_alpha_num = PM_FN(pm_alpha_num_fn);
 
-bool pm_letter_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
+bool pm_letter_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
-	if (pm_out_of_range(src, len, state, res)) {
+	if (pm_out_of_range(src, state, res))
 		return false;
-	}
 	const char c = pm_step_state(src, state);
 	if (is_lower(c) || is_upper(c)) {
-		if (res) {
-			res->value = pm_prim_c(c);
-		}
+		if (res)
+			res->data.prim.c = c;
 		return true;
 	}
-	if (res) {
+	if (res)
 		res->error.state = *state;
-	}
 	return false;
 }
 
-struct pm_parser pm_letter_num = {
-	.self.ptr = NULL,
-	.fn = pm_letter_fn,
-};
+struct pm_parser pm_letter = PM_FN(pm_letter_fn);
 
-bool pm_digit_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
+bool pm_digit_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
-	if (pm_out_of_range(src, len, state, res)) {
+	if (pm_out_of_range(src, state, res))
 		return false;
-	}
 	const char c = pm_step_state(src, state);
 	if (is_number(c)) {
-		if (res) {
-			res->value = pm_prim_c(c);
-		}
+		if (res)
+			res->data.prim.c = c;
 		return true;
 	}
-	if (res) {
+	if (res)
 		res->error.state = *state;
-	}
 	return false;
 }
 
-struct pm_parser pm_digit = { .self.ptr = NULL, pm_digit_fn };
+struct pm_parser pm_digit = PM_FN(pm_digit_fn);
 
-bool pm_hex_digit_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
+bool pm_hex_digit_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
-	if (pm_out_of_range(src, len, state, res))
+	if (pm_out_of_range(src, state, res))
 		return false;
 	const char c = pm_step_state(src, state);
 	if (is_hexadecimal(c)) {
 		if (res)
-			res->value = pm_prim_c(c);
+			res->data.prim.c = c;
 		return true;
 	}
 	if (res)
@@ -312,16 +234,16 @@ bool pm_hex_digit_fn(const union pm_data d, const char *src, long len, struct pm
 	return false;
 }
 
-struct pm_parser pm_hex_digit_num = { .self.ptr = NULL, pm_hex_digit_fn };
+struct pm_parser pm_hex_digit_num = PM_FN(pm_hex_digit_fn);
 
-bool pm_oct_digit_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
+bool pm_oct_digit_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
-	if (pm_out_of_range(src, len, state, res))
+	if (pm_out_of_range(src, state, res))
 		return false;
 	const char c = pm_step_state(src, state);
 	if (c >= '0' && c <= '7') {
 		if (res)
-			res->value = pm_prim_c(c);
+			res->data.prim.c = c;
 		return true;
 	}
 	if (res)
@@ -329,26 +251,26 @@ bool pm_oct_digit_fn(const union pm_data d, const char *src, long len, struct pm
 	return false;
 }
 
-struct pm_parser pm_oct_digit = { .self.ptr = NULL, pm_oct_digit_fn };
+struct pm_parser pm_oct_digit = PM_FN(pm_oct_digit_fn);
 
-bool pm_any_char_fn(const union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
+bool pm_any_char_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
-	if (pm_out_of_range(src, len, state, res))
+	if (pm_out_of_range(src, state, res))
 		return false;
 	if (res)
-		res->value = pm_prim_c(pm_step_state(src, state));
+		res->data.prim.c = pm_step_state(src, state);
 	return true;
 }
 
-struct pm_parser pm_any_char = { .self.ptr = NULL, pm_any_char_fn };
+struct pm_parser pm_any_char = PM_FN(pm_any_char_fn);
 
-bool pm_crlf_fn(union pm_data d, const char *src, long len, struct pm_state *state, struct pm_result *res)
+bool pm_crlf_fn(pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
-	if (pm_out_of_range(src, len, state, res))
+	if (pm_out_of_range(src, state, res))
 		return false;
 	if (pm_step_state(src, state) != '\r')
 		goto fail;
-	if (pm_out_of_range(src, len, state, res))
+	if (pm_out_of_range(src, state, res))
 		return false;
 	if (pm_step_state(src, state) != '\n')
 		goto fail;
@@ -359,4 +281,4 @@ fail:
 	return false;
 }
 
-struct pm_parser pm_crlf = { .self.ptr = NULL, pm_crlf_fn };
+struct pm_parser pm_crlf = PM_FN(pm_crlf_fn);
