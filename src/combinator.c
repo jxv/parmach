@@ -1,7 +1,5 @@
 #include "parmach.h"
 
-#include <stdio.h>
-
 bool pm_choice_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
 	pm_parsers_t *p = d.ptr;
@@ -27,7 +25,7 @@ bool pm_choice_try_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm
 bool pm_trail_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
 	str_t *s = res->data.ptr;
-	s->data = state->pos + (char *)src;
+	s->data = state->pos + (char *)src->data;
 	s->len = 0;
 	while (state->pos < src->len) {
 		const char c = pm_step_state(src, state);
@@ -38,12 +36,12 @@ bool pm_trail_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_resu
 	return true;
 }
 
-pm_parser_t pm_trail = PM_FN(pm_trail_fn);
+const pm_parser_t pm_trail = PM_FN(pm_trail_fn);
 
 bool pm_until_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result_t *res)
 {
 	str_t *s = res->data.ptr;
-	s->data = state->pos + (char *)src;
+	s->data = state->pos + (char *)src->data;
 	s->len = 0;
 	pm_parser_t try = PM_TRY(d.ptr);
 	while (state->pos < src->len) {
@@ -57,4 +55,4 @@ bool pm_until_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_resu
 	return true;
 }
 
-pm_parser_t pm_until_space = PM_UNTIL(&pm_space);
+const pm_parser_t pm_until_space = PM_UNTIL((void *)&pm_space);

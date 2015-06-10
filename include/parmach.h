@@ -83,22 +83,22 @@ bool pm_until_fn(const pm_data_t, const str_t *, pm_state_t *, pm_result_t *);
 bool pm_choice_fn(const pm_data_t, const str_t *, pm_state_t *, pm_result_t *);
 bool pm_choice_try_fn(const pm_data_t, const str_t *, pm_state_t *, pm_result_t *);
 
-extern pm_parser_t pm_fail;
-extern pm_parser_t pm_space;
-extern pm_parser_t pm_newline;
-extern pm_parser_t pm_tab;
-extern pm_parser_t pm_upper;
-extern pm_parser_t pm_lower;
-extern pm_parser_t pm_alpha_num;
-extern pm_parser_t pm_letter;
-extern pm_parser_t pm_digit;
-extern pm_parser_t pm_hex_digit;
-extern pm_parser_t pm_oct_digit;
-extern pm_parser_t pm_any_char;
-extern pm_parser_t pm_crlf;
-extern pm_parser_t pm_eof;
-extern pm_parser_t pm_trail;
-extern pm_parser_t pm_until_space;
+extern const pm_parser_t pm_fail;
+extern const pm_parser_t pm_space;
+extern const pm_parser_t pm_newline;
+extern const pm_parser_t pm_tab;
+extern const pm_parser_t pm_upper;
+extern const pm_parser_t pm_lower;
+extern const pm_parser_t pm_alpha_num;
+extern const pm_parser_t pm_letter;
+extern const pm_parser_t pm_digit;
+extern const pm_parser_t pm_hex_digit;
+extern const pm_parser_t pm_oct_digit;
+extern const pm_parser_t pm_any_char;
+extern const pm_parser_t pm_crlf;
+extern const pm_parser_t pm_eof;
+extern const pm_parser_t pm_trail;
+extern const pm_parser_t pm_until_space;
 
 bool pm_parse(const pm_parser_t p[1], const str_t *src, pm_result_t *res);
 

@@ -37,4 +37,4 @@ bool pm_eof_fn(const pm_data_t d, const str_t *src, pm_state_t *state, pm_result
 	return false;
 }
 
-struct pm_parser pm_eof = PM_FN(pm_eof_fn);
+const pm_parser_t pm_eof = PM_FN(pm_eof_fn);
